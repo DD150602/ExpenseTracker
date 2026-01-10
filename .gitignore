@@ -1,0 +1,86 @@
+# Dependencies
+**/node_modules/
+.pnp
+.pnp.js
+
+# Package manager lock files
+**/package-lock.json
+**/yarn.lock
+**/bun.lockb
+
+# Production build
+**/dist/
+**/build/
+
+# Environment variables
+**/.env
+**/.env.local
+**/.env.development
+**/.env.test
+**/.env.production
+
+# Logs
+**/logs
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/lerna-debug.log*
+
+# OS files
+**/.DS_Store
+**/.DS_Store?
+**/._*
+**/.Spotlight-V100
+**/.Trashes
+**/ehthumbs.db
+**/Thumbs.db
+
+# IDE
+**/.vscode/
+**/.idea/
+**/*.swp
+**/*.swo
+**/*~
+**/.project
+**/.classpath
+**/.settings/
+**/*.sublime-project
+**/*.sublime-workspace
+
+# Testing
+**/coverage/
+**/*.lcov
+**/.nyc_output
+
+# Temporary files
+**/*.tmp
+**/*.temp
+**/.cache/
+
+# Optional npm cache directory
+**/.npm
+
+# Optional eslint cache
+**/.eslintcache
+
+# TypeScript cache
+**/*.tsbuildinfo
+
+# Backup files
+**/*.backup
+**/*.bak
+**/*.old
+
+# Database
+**/*.sql.backup
+**/*.db
+
+# Monorepo
+**/.pnpm-store/
+**/pnpm-workspace.yaml.lock
+
+# Misc
+**/.turbo
+**/turbo.json.lock

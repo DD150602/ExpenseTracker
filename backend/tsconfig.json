@@ -1,0 +1,50 @@
+{
+	"compilerOptions": {
+		/* Language and Environment */
+		"target": "ES2022", // Modern JavaScript features
+		"lib": ["ES2022"], // Include standard library definitions
+
+		/* Modules */
+		"module": "CommonJS", // Use CommonJS for Node.js
+		"rootDir": "./src", // Source files location
+		"moduleResolution": "node", // Node.js module resolution
+		"resolveJsonModule": true, // Allow importing JSON files
+		"allowSyntheticDefaultImports": true, // Better interop with ES modules
+		"esModuleInterop": true, // Better CommonJS/ES module compatibility
+
+		/* Emit */
+		"outDir": "./dist", // Compiled files output directory
+		"removeComments": true, // Remove comments in output
+		"sourceMap": true, // Generate .map files for debugging
+
+		/* Type Checking */
+		"strict": true, // Enable all strict type checks
+		"noImplicitAny": true, // Error on expressions with implied 'any'
+		"strictNullChecks": true, // Strict null checking
+		"strictFunctionTypes": true, // Strict function type checking
+		"strictBindCallApply": true, // Strict bind/call/apply methods
+		"strictPropertyInitialization": true, // Ensure class properties are initialized
+		"noImplicitThis": true, // Error on 'this' with implied 'any'
+		"alwaysStrict": true, // Parse in strict mode
+
+		/* Additional Checks */
+		"noUnusedLocals": true, // Error on unused local variables
+		"noUnusedParameters": true, // Error on unused parameters
+		"noImplicitReturns": true, // Error on functions that don't return explicitly
+		"noFallthroughCasesInSwitch": true, // Error on fallthrough switch cases
+		"noUncheckedIndexedAccess": true, // Add undefined to index signature results
+
+		/* Interop Constraints */
+		"forceConsistentCasingInFileNames": true, // Ensure consistent file casing
+		"skipLibCheck": true // Skip type checking of declaration files
+	},
+	"include": [
+		"src/**/*" // Include all TypeScript files in src
+	],
+	"exclude": [
+		"node_modules", // Exclude dependencies
+		"dist", // Exclude build output
+		"**/*.spec.ts", // Exclude test files (if you add them later)
+		"**/*.test.ts"
+	]
+}
