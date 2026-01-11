@@ -2,6 +2,7 @@ import { type AuthServcice, authService } from '../services/auth.service'
 import { asyncHandler } from '../utils/asyncHandler'
 import { env } from '../config/env'
 import type { Request, Response } from 'express'
+import type { RegisterInput } from '../types'
 
 export class AuthController {
   constructor(private authService: AuthServcice) {}
@@ -20,6 +21,24 @@ export class AuthController {
       message: 'Login successful',
       data: {
         user: result.user,
+        token: result.token,
+      },
+    })
+  })
+
+  register = asyncHandler(async (req: Request, res: Response) => {
+    const result = await this.authService.register(req.body as RegisterInput)
+    res.cookie('token', result.token, {
+      httpOnly: env.COOKIE_HTTP_ONLY,
+      secure: env.COOKIE_SECURE,
+      sameSite: 'strict',
+      maxAge: env.COOKIE_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
+    })
+    res.status(201).json({
+      success: true,
+      message: 'Registration successful',
+      data: {
+        userId: result.userId,
         token: result.token,
       },
     })

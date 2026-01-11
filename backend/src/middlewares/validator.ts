@@ -14,7 +14,6 @@ export const validate = (schema: ZodSchema) => {
           field: issue.path.join('.'),
           message: issue.message,
         }))
-        console.log(errorMessages)
 
         throw new AppError(JSON.stringify(errorMessages), 400)
       }

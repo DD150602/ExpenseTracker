@@ -1,16 +1,26 @@
-import type { RowDataPacket } from 'mysql2'
+import type { ResultSetHeader, RowDataPacket } from 'mysql2'
 import pool from '../config/database'
-import type { User } from '../types'
+import type { RegisterInput, User } from '../types'
 
 export class UserModel {
   async findByEmail(email: string): Promise<User | null> {
     const conn = await pool.getConnection()
     const [[rows]] = await conn.execute<RowDataPacket[]>(
-      'SELECT * FROM users WHERE user_email = ?',
+      'SELECT user_id, user_username, user_email, user_password, user_created_at, user_updated_at FROM users WHERE user_email = ?',
       [email]
     )
     conn.release()
     return rows as User | null
+  }
+
+  async createUser(data: RegisterInput): Promise<number | null> {
+    const conn = await pool.getConnection()
+    const [result] = await conn.execute<ResultSetHeader>(
+      'INSERT INTO users (user_username, user_email, user_password) VALUES (?, ?, ?)',
+      [data.username, data.email, data.password]
+    )
+    conn.release()
+    return result.insertId || null
   }
 }
 

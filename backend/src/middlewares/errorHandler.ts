@@ -10,10 +10,9 @@ export const errorHandler = (
   if (err instanceof AppError){
     return res.status(err.statusCode).json({
       success: false,
-      message: JSON.parse(err.message),
+      message: err.message,
     })
   }
-  console.error('ERROR: ', err)
   return res.status(500).json({
     success: false,
     message: 'Internal server error'
