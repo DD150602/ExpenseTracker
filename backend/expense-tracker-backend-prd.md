@@ -2,8 +2,8 @@
 
 ## Expense Tracker Backend API
 
-**Version:** 1.0
-**Date:** January 10, 2026
+**Version:** 1.1
+**Date:** January 13, 2026
 **Author:** Development Team
 **Status:** In Development
 
@@ -201,6 +201,23 @@ export const userModel = new UserModel()
 
 **Rationale**: Eliminate repetitive try-catch blocks, ensure consistent error handling
 **Implementation**: Wrap all async route handlers with asyncHandler utility
+
+#### Decision 4: Model Method Reusability
+
+**Rationale**: Promote code reuse and maintain single source of truth for data access
+**Implementation**:
+
+- Models contain generic, reusable query methods (e.g., `findByEmail`, `findById`)
+- Services reuse model methods across different features
+- Specialized methods created only when query differs significantly
+- Example: `UserModel.findByEmail()` used by `AuthService`, `UserService`
+
+**Benefits**:
+
+- Single source of truth for database queries
+- Easier maintenance and testing
+- Consistent data access patterns
+- Follows DRY principle
 
 ---
 
@@ -543,17 +560,110 @@ export const authController = new AuthController(authService)
 1. **Validation Middleware** (`validator.ts`)
    - Validates request data with Zod schemas
    - Throws `AppError` on validation failure
+   - Replaces `req.body` with validated data
+   - Removes extra fields not in schema
+
+   **Implementation**:
+
+   ```typescript
+   export const validate = (schema: ZodSchema) => {
+     return (req: Request, res: Response, next: NextFunction) => {
+       try {
+         const validatedData = schema.parse(req.body)
+         req.body = validatedData
+         next()
+       } catch (error) {
+         if (error instanceof ZodError) {
+           const errors = error.errors.map((err) => ({
+             field: err.path.join('.'),
+             message: err.message
+           }))
+           throw new AppError(JSON.stringify(errors), 400)
+         }
+         throw error
+       }
+     }
+   }
+   ```
 
 2. **Authentication Middleware** (`auth.ts`)
-   - Verifies JWT token from cookie or header
+   - Verifies JWT token from cookie
    - Attaches `userId` to request object
+   - Supports JWT error handling (invalid token, expired token)
    - Throws `AppError` if unauthorized
+   - Extends Express Request type to include userId property
+
+   **Implementation**:
+
+   ```typescript
+   // Extend Express Request type
+   declare global {
+     namespace Express {
+       interface Request {
+         userId?: number
+       }
+     }
+   }
+
+   interface JwtPayload {
+     userId: number
+     iat: number
+     exp: number
+   }
+
+   export const auth = (req: Request, _res: Response, next: NextFunction) => {
+     try {
+       const token = req.cookies.token
+
+       if (!token) {
+         throw new AppError('Access token not provided', 401)
+       }
+
+       const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload
+       req.userId = decoded.userId
+
+       next()
+     } catch (error) {
+       if (error instanceof jwt.JsonWebTokenError) {
+         throw new AppError('Invalid token', 401)
+       }
+       if (error instanceof jwt.TokenExpiredError) {
+         throw new AppError('Token expired', 401)
+       }
+       throw error
+     }
+   }
+   ```
 
 3. **Error Handler Middleware** (`errorHandler.ts`)
    - Catches all errors
    - Formats error responses
    - Logs programming errors
    - Sends appropriate HTTP status codes
+   - Must be registered as last middleware
+
+   **Implementation**:
+
+   ```typescript
+   export const errorHandler = (
+     err: Error,
+     req: Request,
+     res: Response,
+     next: NextFunction
+   ) => {
+     if (err instanceof AppError) {
+       return res.status(err.statusCode).json({
+         success: false,
+         message: err.message
+       })
+     }
+
+     return res.status(500).json({
+       success: false,
+       message: 'Internal server error'
+     })
+   }
+   ```
 
 ### 6.5 Utilities Layer
 
@@ -630,6 +740,34 @@ const envSchema = z.object({
 export const env = envSchema.parse(process.env)
 ```
 
+**index.ts** (Application Entry Point):
+
+```typescript
+import express, { json } from 'express'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import { env } from './config/env'
+import authRoutes from './routes/auth.routes'
+import userRoutes from './routes/user.routes'
+import { errorHandler } from './middlewares/errorHandler'
+
+const app = express()
+
+// Middleware
+app.use(cors({ origin: env.FRONTEND_URL, credentials: true }))
+app.use(json())
+app.use(cookieParser())
+
+// Routes
+app.use('/api/auth', authRoutes)
+app.use('/api/users', userRoutes)
+
+// Error handler (must be last)
+app.use(errorHandler)
+
+app.listen(env.PORT, () => console.log(`server runing on port ${env.PORT}`))
+```
+
 ---
 
 ## 7. Code Style & Conventions
@@ -692,12 +830,12 @@ backend/
 │   │   └── env.ts               # Environment validation (Zod)
 │   │
 │   ├── middlewares/
-│   │   ├── auth.ts              # JWT verification
+│   │   ├── auth.ts              # JWT verification middleware
 │   │   ├── errorHandler.ts     # Global error handler
 │   │   └── validator.ts         # Zod validation middleware
 │   │
 │   ├── schemas/
-│   │   ├── user.schema.ts       # User validation schemas
+│   │   ├── user.schema.ts       # User validation schemas (register, login)
 │   │   ├── category.schema.ts  # Category validation schemas
 │   │   └── transaction.schema.ts # Transaction validation schemas
 │   │
@@ -708,19 +846,19 @@ backend/
 │   │
 │   ├── services/
 │   │   ├── auth.service.ts      # Authentication business logic
-│   │   ├── user.service.ts      # User business logic
+│   │   ├── user.service.ts      # User-related business logic
 │   │   ├── category.service.ts  # Category business logic
 │   │   └── transaction.service.ts # Transaction business logic
 │   │
 │   ├── controllers/
-│   │   ├── auth.controller.ts   # Authentication HTTP handlers
-│   │   ├── user.controller.ts   # User HTTP handlers
+│   │   ├── auth.controller.ts   # Authentication HTTP handlers (register, login)
+│   │   ├── user.controller.ts   # User HTTP handlers (get user info)
 │   │   ├── category.controller.ts # Category HTTP handlers
 │   │   └── transaction.controller.ts # Transaction HTTP handlers
 │   │
 │   ├── routes/
-│   │   ├── auth.routes.ts       # Auth endpoints
-│   │   ├── user.routes.ts       # User endpoints
+│   │   ├── auth.routes.ts       # Auth endpoints (/api/auth)
+│   │   ├── user.routes.ts       # User endpoints (/api/users)
 │   │   ├── category.routes.ts   # Category endpoints
 │   │   └── transaction.routes.ts # Transaction endpoints
 │   │
@@ -754,7 +892,7 @@ backend/
   3. Hash password with bcrypt (10 rounds)
   4. Create user in database
   5. Generate JWT token
-  6. Set HTTP-only cookie
+  6. Set HTTP-only cookie (1 day expiration)
 - **Output**: User object (without password) + token
 - **Error Cases**:
   - 400: Invalid input (Zod validation)
@@ -770,7 +908,7 @@ backend/
   2. Find user by email
   3. Verify password with bcrypt
   4. Generate JWT token
-  5. Set HTTP-only cookie
+  5. Set HTTP-only cookie (1 day expiration)
 - **Output**: User object + token
 - **Error Cases**:
   - 401: Invalid credentials (user not found)
@@ -782,14 +920,44 @@ backend/
 - **Process**: Clear authentication cookie
 - **Output**: Success message
 
-#### Feature: Get Profile
+### 9.2 User Features
 
-- **Endpoint**: `GET /api/auth/profile`
+#### Feature: Get User Info
+
+- **Endpoint**: `GET /api/users/info`
 - **Auth**: Required (JWT)
-- **Process**: Return current user data
-- **Output**: User object
+- **Process**: Return current authenticated user data
+- **Output**: User object (without password)
+- **Error Cases**:
+  - 401: No token provided
+  - 401: Invalid token
+  - 401: Token expired
+  - 404: User not found
 
-### 9.2 Category Features
+**Architecture Note**: User-related operations are separated from authentication logic:
+
+- `AuthService` handles authentication (login, register)
+- `UserService` handles user operations (get info, update profile)
+- This separation allows for better code organization and reusability
+
+---
+
+## 10. Implemented API Endpoints
+
+### Authentication Endpoints (`/api/auth`)
+
+- `POST /api/auth/register` - Register new user (public)
+- `POST /api/auth/login` - Login user (public)
+
+### User Endpoints (`/api/users`)
+
+- `GET /api/users/info` - Get current user information (protected)
+
+**Note**: Protected endpoints require JWT token in HTTP-only cookie named `token`
+
+---
+
+### 9.3 Category Features
 
 #### Feature: Create Category
 
@@ -830,7 +998,7 @@ backend/
   - 403: Not category owner
   - 400: Category has associated transactions
 
-### 9.3 Transaction Features
+### 9.4 Transaction Features
 
 #### Feature: Create Transaction
 
@@ -1114,14 +1282,17 @@ pnpm start
    - ✅ env.ts config
    - ✅ database.ts config
 
-2. **Phase 2: Authentication**
-   - user.schema.ts (Zod validation)
-   - user.model.ts (database queries)
-   - auth.service.ts (business logic)
-   - auth.controller.ts (HTTP handlers)
+2. **Phase 2: Authentication & User Management**
+   - user.schema.ts (Zod validation schemas for register/login)
+   - user.model.ts (database queries - findByEmail, findById, create)
+   - auth.service.ts (authentication business logic)
+   - auth.controller.ts (HTTP handlers for register/login)
+   - user.service.ts (user-related business logic)
+   - user.controller.ts (HTTP handlers for user info)
    - validator.ts middleware
    - errorHandler.ts middleware
-   - auth.routes.ts
+   - auth.routes.ts (public auth endpoints)
+   - user.routes.ts (protected user endpoints)
    - Test authentication flow
 
 3. **Phase 3: Protected Routes**
@@ -1188,7 +1359,7 @@ JWT_SECRET=your_super_secret_key_minimum_32_characters_long
 JWT_EXPIRES_IN=7d
 
 # Cookies
-COOKIE_EXPIRES_DAYS=7
+COOKIE_EXPIRES_DAYS=1
 COOKIE_SECURE=false
 COOKIE_HTTP_ONLY=true
 ```
@@ -1206,7 +1377,7 @@ COOKIE_HTTP_ONLY=true
 | DB_NAME | string | Database name | expense_tracker |
 | JWT_SECRET | string | JWT signing key (min 32 chars) | long_random_string |
 | JWT_EXPIRES_IN | string | Token expiration | 7d, 24h, 30m |
-| COOKIE_EXPIRES_DAYS | number | Cookie duration in days | 7 |
+| COOKIE_EXPIRES_DAYS | number | Cookie duration in days | 1 |
 | COOKIE_SECURE | boolean | HTTPS only (prod: true) | false, true |
 | COOKIE_HTTP_ONLY | boolean | Prevent JS access | true |
 
@@ -1296,6 +1467,7 @@ All environment variables are validated on application start. If any required va
 | Version | Date | Author | Changes |
 | --------- | ------ | -------- | --------- |
 | 1.0 | 2026-01-10 | Development Team | Initial PRD created |
+| 1.1 | 2026-01-13 | Development Team | Updated with implementation details: Added auth middleware with JWT error handling, separated UserService and UserController from AuthController, updated cookie expiration to 1 day, added model method reusability pattern, added complete middleware implementations, updated API endpoints structure |
 
 ---
 
