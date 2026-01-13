@@ -13,6 +13,16 @@ export class UserModel {
     return rows as User | null
   }
 
+  async findById(user_id: number): Promise<User | null> {
+    const conn = await pool.getConnection()
+    const [[rows]] = await conn.execute<RowDataPacket[]>(
+      'SELECT user_id, user_username, user_email, user_created_at, user_updated_at FROM users WHERE user_id = ?',
+      [user_id]
+    )
+    conn.release()
+    return rows as User | null
+  }
+
   async createUser(data: RegisterInput): Promise<number | null> {
     const conn = await pool.getConnection()
     const [result] = await conn.execute<ResultSetHeader>(

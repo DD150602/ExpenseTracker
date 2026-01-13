@@ -4,6 +4,7 @@ import express, { json } from 'express'
 import { env } from './config/env'
 import { errorHandler } from './middlewares/errorHandler'
 import authRoutes from "./routes/auth.routes";
+import userRoutes from "./routes/user.routes";
 
 const app = express()
 
@@ -12,6 +13,7 @@ app.use(json())
 app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
+app.use('/api/user', userRoutes)
 
 app.use(errorHandler)
 
