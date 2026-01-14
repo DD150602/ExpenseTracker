@@ -7,7 +7,7 @@ import { AppError } from '../utils/AppError'
 declare global {
   namespace Express {
     interface Request {
-      userId?: number
+      userId: number
     }
   }
 }
