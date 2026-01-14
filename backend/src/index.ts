@@ -3,8 +3,9 @@ import cors from 'cors'
 import express, { json } from 'express'
 import { env } from './config/env'
 import { errorHandler } from './middlewares/errorHandler'
-import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
+import authRoutes from './routes/auth.routes'
+import userRoutes from './routes/user.routes'
+import categoryRoutes from './routes/category.routes'
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/categories', categoryRoutes)
 
 app.use(errorHandler)
 
