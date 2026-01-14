@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from 'mysql2'
 import pool from '../config/database'
-import type { RegisterInput, User } from '../types'
+import type { RegisterInput, User, UserName } from '../types'
 
 export class UserModel {
   async findByEmail(email: string): Promise<User | null> {
@@ -11,6 +11,15 @@ export class UserModel {
     )
     conn.release()
     return rows as User | null
+  }
+  async findByUsername(userName: string): Promise<UserName | null> {
+    const conn = await pool.getConnection()
+    const [[rows]] = await conn.execute<RowDataPacket[]>(
+      'SELECT user_id, user_username FROM users WHERE user_username = ?',
+      [userName]
+    )
+    conn.release()
+    return rows as UserName | null
   }
 
   async findById(user_id: number): Promise<User | null> {
@@ -31,6 +40,49 @@ export class UserModel {
     )
     conn.release()
     return result.insertId || null
+  }
+
+  async updateUser(
+    userId: number,
+    data: Partial<{ username: string; email: string }>
+  ): Promise<User | null> {
+    const conn = await pool.getConnection()
+
+    try {
+      const updates: string[] = []
+      const values: (string | number)[] = []
+
+      if (data.username !== undefined) {
+        updates.push('user_username = ?')
+        values.push(data.username)
+      }
+
+      if (data.email !== undefined) {
+        updates.push('user_email = ?')
+        values.push(data.email)
+      }
+
+      if (updates.length === 0) {
+        const user = await this.findById(userId)
+        conn.release()
+        return user
+      }
+
+      values.push(userId)
+
+      await conn.execute<ResultSetHeader>(
+        `UPDATE users SET ${updates.join(', ')} WHERE user_id = ?`,
+        values
+      )
+      const updatedUser = await this.findById(userId)
+      conn.release()
+      return updatedUser
+    } catch (error) {
+      conn.release()
+      throw error
+    }finally{
+      conn.release()
+    }
   }
 }
 

@@ -10,5 +10,7 @@ export interface User {
   user_updated_at: Date
 }
 
+export type UserName = Pick<User,'user_id' | 'user_username'>
+
 export type RegisterInput = z.infer<typeof registerSchema>
 export type LoginInput = z.infer<typeof loginSchema>
