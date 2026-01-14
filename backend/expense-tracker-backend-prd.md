@@ -2,7 +2,7 @@
 
 ## Expense Tracker Backend API
 
-**Version:** 1.1
+**Version:** 1.2
 **Date:** January 13, 2026
 **Author:** Development Team
 **Status:** In Development
@@ -207,7 +207,7 @@ export const userModel = new UserModel()
 **Rationale**: Promote code reuse and maintain single source of truth for data access
 **Implementation**:
 
-- Models contain generic, reusable query methods (e.g., `findByEmail`, `findById`)
+- Models contain generic, reusable query methods (e.g., `findByEmail`, `findById`, `findByUsername`)
 - Services reuse model methods across different features
 - Specialized methods created only when query differs significantly
 - Example: `UserModel.findByEmail()` used by `AuthService`, `UserService`
@@ -218,6 +218,47 @@ export const userModel = new UserModel()
 - Easier maintenance and testing
 - Consistent data access patterns
 - Follows DRY principle
+
+#### Decision 5: Dynamic SQL Query Building
+
+**Rationale**: Enable flexible partial updates without code duplication
+**Implementation**:
+
+- Model update methods accept `Partial<T>` types for optional fields
+- SQL queries built dynamically based on provided fields
+- Only updates fields that are actually provided
+- Prevents unnecessary database operations
+
+**Example**:
+
+```typescript
+async update(userId: number, data: Partial<{ username: string; email: string }>) {
+  const updates: string[] = []
+  const values: any[] = []
+
+  if (data.username !== undefined) {
+    updates.push('user_username = ?')
+    values.push(data.username)
+  }
+
+  if (data.email !== undefined) {
+    updates.push('user_email = ?')
+    values.push(data.email)
+  }
+
+  const query = `UPDATE users SET ${updates.join(', ')} WHERE user_id = ?`
+  // Execute with parameterized values for SQL injection protection
+}
+```
+
+**Security**: Column names are hardcoded, only values are parameterized - safe from SQL injection
+
+**Benefits**:
+
+- Flexible partial updates (PATCH semantics)
+- No unnecessary UPDATE operations
+- Cleaner code (no multiple update methods)
+- Better performance
 
 ---
 
@@ -835,7 +876,7 @@ backend/
 │   │   └── validator.ts         # Zod validation middleware
 │   │
 │   ├── schemas/
-│   │   ├── user.schema.ts       # User validation schemas (register, login)
+│   │   ├── user.schema.ts       # User validation schemas (register, login, updateProfile)
 │   │   ├── category.schema.ts  # Category validation schemas
 │   │   └── transaction.schema.ts # Transaction validation schemas
 │   │
@@ -852,7 +893,7 @@ backend/
 │   │
 │   ├── controllers/
 │   │   ├── auth.controller.ts   # Authentication HTTP handlers (register, login)
-│   │   ├── user.controller.ts   # User HTTP handlers (get user info)
+│   │   ├── user.controller.ts   # User HTTP handlers (get user info, update profile)
 │   │   ├── category.controller.ts # Category HTTP handlers
 │   │   └── transaction.controller.ts # Transaction HTTP handlers
 │   │
@@ -934,9 +975,37 @@ backend/
   - 401: Token expired
   - 404: User not found
 
+#### Feature: Update User Profile
+
+- **Endpoint**: `PATCH /api/users/profile`
+- **Auth**: Required (JWT)
+- **Input**: username (optional), email (optional)
+- **Validation**: At least one field must be provided
+- **Process**:
+  1. Validate input with `updateProfileSchema`
+  2. Check username uniqueness (if provided, exclude current user)
+  3. Check email uniqueness (if provided, exclude current user)
+  4. Update user with dynamic SQL query
+  5. Return updated user data
+- **Output**: Updated user object (without password)
+- **Error Cases**:
+  - 400: No fields provided
+  - 401: No token provided
+  - 401: Invalid token
+  - 409: Username already in use (by another user)
+  - 409: Email already in use (by another user)
+  - 500: Failed to update user
+
+**Implementation Details**:
+
+- Uses dynamic SQL query to update only provided fields
+- Allows partial updates (username only, email only, or both)
+- Uniqueness validation excludes current user (users can keep their own username/email)
+- Model method `updateUser` builds query dynamically based on provided fields
+
 **Architecture Note**: User-related operations are separated from authentication logic:
 
-- `AuthService` handles authentication (login, register)
+- `AuthService` handles authentication (login, register, logout)
 - `UserService` handles user operations (get info, update profile)
 - This separation allows for better code organization and reusability
 
@@ -952,6 +1021,7 @@ backend/
 ### User Endpoints (`/api/users`)
 
 - `GET /api/users/info` - Get current user information (protected)
+- `PATCH /api/users/profile` - Update user profile (username/email) (protected)
 
 **Note**: Protected endpoints require JWT token in HTTP-only cookie named `token`
 
@@ -1468,6 +1538,7 @@ All environment variables are validated on application start. If any required va
 | --------- | ------ | -------- | --------- |
 | 1.0 | 2026-01-10 | Development Team | Initial PRD created |
 | 1.1 | 2026-01-13 | Development Team | Updated with implementation details: Added auth middleware with JWT error handling, separated UserService and UserController from AuthController, updated cookie expiration to 1 day, added model method reusability pattern, added complete middleware implementations, updated API endpoints structure |
+| 1.2 | 2026-01-13 | Development Team | Added user profile update functionality: PATCH /api/users/profile endpoint, updateProfileSchema with partial updates, dynamic SQL query building in UserModel.updateUser, uniqueness validation excluding current user, architectural decision on dynamic SQL queries for security and flexibility |
 
 ---
 
