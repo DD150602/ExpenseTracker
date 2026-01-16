@@ -2,8 +2,8 @@
 
 ## Expense Tracker Backend API
 
-**Version:** 1.2
-**Date:** January 13, 2026
+**Version:** 1.3
+**Date:** January 15, 2026
 **Author:** Development Team
 **Status:** In Development
 
@@ -48,7 +48,7 @@ Develop a RESTful API backend for a personal income and expense tracking applica
 
 ### 1.3 Target Users
 
-Individual users who want to track their personal finances through a web or mobile application.
+Individual users who want to track their personal finances through a web or mobile web application.
 
 ---
 
@@ -58,11 +58,11 @@ Individual users who want to track their personal finances through a web or mobi
 
 | Technology | Version | Purpose |
 | ------------ | --------- | --------- |
-| **Node.js** | >=18.0.0 | JavaScript runtime environment |
-| **TypeScript** | ^5.3.3 | Type-safe JavaScript superset |
-| **Express** | ^4.18.2 | Web application framework |
+| **Node.js** | 22.14.0 | JavaScript runtime environment |
+| **TypeScript** | 5.9.3 | Type-safe JavaScript superset |
+| **Express** | 5.2.1 | Framework Backend HTTP |
 | **MySQL** | Latest | Relational database |
-| **pnpm** | >=8.0.0 | Package manager |
+| **pnpm** | 10.17.1 | Package manager |
 
 ### 2.2 Dependencies
 
@@ -70,14 +70,14 @@ Individual users who want to track their personal finances through a web or mobi
 
 ```json
 {
-  "express": "^4.18.2",
-  "mysql2": "^3.9.1",
-  "jsonwebtoken": "^9.0.2",
-  "bcryptjs": "^2.4.3",
-  "zod": "^3.22.4",
-  "cookie-parser": "^1.4.6",
-  "cors": "^2.8.5",
-  "dotenv": "^16.4.5"
+  "bcryptjs": "3.0.3",
+  "cookie-parser": "1.4.7",
+  "cors": "2.8.5",
+  "dotenv": "17.2.3",
+  "express": "5.2.1",
+  "jsonwebtoken": "9.0.3",
+  "mysql2": "3.16.0",
+  "zod": "4.3.5"
 }
 ```
 
@@ -96,16 +96,15 @@ Individual users who want to track their personal finances through a web or mobi
 
 ```json
 {
-  "typescript": "^5.3.3",
-  "@types/express": "^4.17.21",
-  "@types/node": "^20.11.5",
-  "@types/jsonwebtoken": "^9.0.5",
-  "@types/bcryptjs": "^2.4.6",
-  "@types/cookie-parser": "^1.4.7",
-  "@types/cors": "^2.8.17",
-  "@biomejs/biome": "^1.9.4",
-  "tsx": "^4.7.0",
-  "nodemon": "^3.0.3"
+  "@biomejs/biome": "2.3.11",
+  "@types/cookie-parser": "1.4.10",
+  "@types/cors": "2.8.19",
+  "@types/express": "5.0.6",
+  "@types/jsonwebtoken": "9.0.10",
+  "@types/node": "25.0.3",
+  "nodemon": "3.1.11",
+  "tsx": "4.21.0",
+  "typescript": "5.9.3"
 }
 ```
 
@@ -274,32 +273,54 @@ async update(userId: number, data: Partial<{ username: string; email: string }>)
 
 ```json
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "CommonJS",
-    "lib": ["ES2022"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "sourceMap": true,
-    "removeComments": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+ "compilerOptions": {
+  /* Language and Environment */
+  "target": "ES2022",
+  "lib": ["ES2022"],
+
+  /* Modules */
+  "module": "CommonJS",
+  "rootDir": "./src",
+  "moduleResolution": "node",
+  "resolveJsonModule": true,
+  "allowSyntheticDefaultImports": true,
+  "esModuleInterop": true,
+
+  /* Emit */
+  "outDir": "./dist",
+  "removeComments": true,
+  "sourceMap": true,
+
+  /* Type Checking */
+  "strict": true,
+  "noImplicitAny": true,
+  "strictNullChecks": true,
+  "strictFunctionTypes": true,
+  "strictBindCallApply": true,
+  "strictPropertyInitialization": true,
+  "noImplicitThis": true,
+  "alwaysStrict": true,
+
+  /* Additional Checks */
+  "noUnusedLocals": true,
+  "noUnusedParameters": true,
+  "noImplicitReturns": true,
+  "noFallthroughCasesInSwitch": true,
+  "noUncheckedIndexedAccess": true,
+
+  /* Interop Constraints */
+  "forceConsistentCasingInFileNames": true,
+  "skipLibCheck": true
+ },
+ "include": [
+  "src/**/*"
+ ],
+ "exclude": [
+  "node_modules",
+  "dist",
+  "**/*.spec.ts",
+  "**/*.test.ts"
+ ]
 }
 ```
 
@@ -324,22 +345,123 @@ async update(userId: number, data: Partial<{ username: string; email: string }>)
 
 ```json
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "formatter": {
-    "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineWidth": 100
-  },
-  "javascript": {
-    "formatter": {
-      "semicolons": "asNeeded",
-      "quoteStyle": "single",
-      "arrowParentheses": "always",
-      "bracketSpacing": true,
-      "trailingCommas": "es5"
-    }
+ "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+ "files": {
+  "includes": [
+   "**",
+   "!!**/node_modules/",
+   "!!**/dist"
+  ],
+  "ignoreUnknown": false
+ },
+ "linter": {
+  "enabled": true,
+  "rules": {
+   "recommended": true,
+   "complexity": {
+    "noExtraBooleanCast": "error",
+    "noUselessCatch": "error",
+    "noUselessConstructor": "error",
+    "noUselessEmptyExport": "error",
+    "noUselessFragments": "error",
+    "noUselessLabel": "error",
+    "noUselessRename": "error",
+    "noUselessSwitchCase": "error",
+    "useLiteralKeys": "error",
+    "useOptionalChain": "warn"
+   },
+   "correctness": {
+    "noConstAssign": "error",
+    "noConstantCondition": "error",
+    "noEmptyCharacterClassInRegex": "error",
+    "noEmptyPattern": "error",
+    "noGlobalObjectCalls": "error",
+    "noInnerDeclarations": "error",
+    "noInvalidConstructorSuper": "error",
+    "noNonoctalDecimalEscape": "error",
+    "noPrecisionLoss": "error",
+    "noSelfAssign": "error",
+    "noSetterReturn": "error",
+    "noSwitchDeclarations": "error",
+    "noUndeclaredVariables": "error",
+    "noUnreachable": "error",
+    "noUnreachableSuper": "error",
+    "noUnsafeFinally": "error",
+    "noUnsafeOptionalChaining": "error",
+    "noUnusedLabels": "error",
+    "noUnusedVariables": "warn",
+    "useIsNan": "error",
+    "useValidForDirection": "error"
+   },
+   "style": {
+    "useBlockStatements": "warn",
+    "useConst": "error",
+    "useDefaultParameterLast": "error",
+    "useExponentiationOperator": "error",
+    "useTemplate": "warn"
+   },
+   "suspicious": {
+    "noAssignInExpressions": "warn",
+    "noAsyncPromiseExecutor": "error",
+    "noCatchAssign": "error",
+    "noClassAssign": "error",
+    "noCompareNegZero": "error",
+    "noControlCharactersInRegex": "error",
+    "noDebugger": "error",
+    "noDoubleEquals": "warn",
+    "noDuplicateCase": "error",
+    "noDuplicateClassMembers": "error",
+    "noDuplicateObjectKeys": "error",
+    "noDuplicateParameters": "error",
+    "noEmptyBlockStatements": "warn",
+    "noExplicitAny": "warn",
+    "noExtraNonNullAssertion": "error",
+    "noFallthroughSwitchClause": "error",
+    "noFunctionAssign": "error",
+    "noGlobalAssign": "error",
+    "noImportAssign": "error",
+    "noMisleadingCharacterClass": "error",
+    "noPrototypeBuiltins": "error",
+    "noRedeclare": "error",
+    "noShadowRestrictedNames": "error",
+    "noUnsafeNegation": "error"
+   },
+   "security": {
+    "noDangerouslySetInnerHtml": "error",
+    "noDangerouslySetInnerHtmlWithChildren": "error"
+   }
   }
+ },
+ "formatter": {
+  "enabled": true,
+  "formatWithErrors": false,
+  "indentStyle": "space",
+  "indentWidth": 2,
+  "lineEnding": "lf",
+  "lineWidth": 100,
+  "attributePosition": "auto"
+ },
+ "javascript": {
+  "formatter": {
+   "jsxQuoteStyle": "double",
+   "quoteProperties": "asNeeded",
+   "trailingCommas": "es5",
+   "semicolons": "asNeeded",
+   "arrowParentheses": "always",
+   "bracketSpacing": true,
+   "bracketSameLine": false,
+   "quoteStyle": "single",
+   "attributePosition": "auto"
+  }
+ },
+ "json": {
+  "formatter": {
+   "enabled": true,
+   "indentStyle": "space",
+   "indentWidth": 2,
+   "lineWidth": 100
+  }
+ }
 }
 ```
 
@@ -370,7 +492,6 @@ Key ignored items:
 - `**/node_modules/`
 - `**/dist/`
 - `**/.env*`
-- `**/pnpm-lock.yaml` (lockfile ignored per request)
 - `**/package-lock.json`
 - `**/yarn.lock`
 
@@ -476,15 +597,13 @@ categories (1) ──< (many) transactions
 ```typescript
 export class UserModel {
   async findByEmail(email: string): Promise<User | null> {
-    const [rows] = await pool.execute<RowDataPacket[]>(
-      'SELECT * FROM users WHERE user_email = ?',
+    const conn = await pool.getConnection()
+    const [[rows]] = await conn.execute<RowDataPacket[]>(
+      'SELECT user_id, user_username, user_email, user_password, user_created_at, user_updated_at FROM users WHERE user_email = ?',
       [email]
     )
-    return rows.length > 0 ? (rows[0] as User) : null
-  }
-
-  async create(username: string, email: string, hashedPassword: string): Promise<User> {
-    // INSERT query and return created user
+    conn.release()
+    return rows as User | null
   }
 }
 
@@ -509,34 +628,35 @@ export const userModel = new UserModel()
 export class AuthService {
   constructor(private userModel: UserModel) {}
 
-  async register(username: string, email: string, password: string) {
-    // 1. Check if user exists
-    const existing = await this.userModel.findByEmail(email)
-    if (existing) throw new AppError('Email already in use', 400)
-
-    // 2. Hash password
-    const hashedPassword = await this.hashPassword(password)
-
-    // 3. Create user
-    const user = await this.userModel.create(username, email, hashedPassword)
-
-    // 4. Generate token
-    const token = this.generateToken(user.user_id)
-
-    return { user: this.sanitizeUser(user), token }
+  async register(data:RegisterInput){
+    const existingUser =  await this.userModel.findByEmail(data.email)
+    if(existingUser){
+      throw new AppError('Email already in use', 403)
+    }
+    const hashedPassword = await this.hash(data.password)
+    const result = await this.userModel.createUser({...data, password: hashedPassword})
+    if(!result){
+      throw new AppError('Registration failed', 500)
+    }
+    const token = this.generateToken(result)
+    return {userId: result, token}
   }
 
-  private async hashPassword(password: string): Promise<string> {
+  private async hash(password: string): Promise<string> {
     return bcrypt.hash(password, 10)
   }
 
-  private generateToken(userId: number): string {
-    return jwt.sign({ userId }, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN })
+  private async verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(password, hashedPassword)
   }
 
-  private sanitizeUser(user: any) {
-    const { user_password, ...sanitized } = user
-    return sanitized
+  private generateToken(userId: number): string {
+    return jwt.sign({ userId }, env.JWT_SECRET, { expiresIn: '7d' })
+  }
+
+  private sanitizeUser(user: User) {
+    const { user_password, ...userWithoutPassword } = user
+    return userWithoutPassword
   }
 }
 
@@ -562,22 +682,20 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   register = asyncHandler(async (req: Request, res: Response) => {
-    const { username, email, password } = req.body
-
-    const result = await this.authService.register(username, email, password)
-
-    // Set HTTP-only cookie
+    const result = await this.authService.register(req.body as RegisterInput)
     res.cookie('token', result.token, {
-      httpOnly: true,
+      httpOnly: env.COOKIE_HTTP_ONLY,
       secure: env.COOKIE_SECURE,
+      sameSite: 'strict',
       maxAge: env.COOKIE_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
-      sameSite: 'strict'
     })
-
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
-      data: result
+      message: 'Registration successful',
+      data: {
+        userId: result.userId,
+        token: result.token,
+      },
     })
   })
 }
@@ -615,9 +733,9 @@ export const authController = new AuthController(authService)
          next()
        } catch (error) {
          if (error instanceof ZodError) {
-           const errors = error.errors.map((err) => ({
-             field: err.path.join('.'),
-             message: err.message
+           const errorsMessage = error.issues.map((issue) => ({
+             field: issue.path.join('.'),
+             message: issue.message
            }))
            throw new AppError(JSON.stringify(errors), 400)
          }
@@ -641,7 +759,7 @@ export const authController = new AuthController(authService)
    declare global {
      namespace Express {
        interface Request {
-         userId?: number
+         userId: number
        }
      }
    }
@@ -679,7 +797,6 @@ export const authController = new AuthController(authService)
 3. **Error Handler Middleware** (`errorHandler.ts`)
    - Catches all errors
    - Formats error responses
-   - Logs programming errors
    - Sends appropriate HTTP status codes
    - Must be registered as last middleware
 
@@ -688,9 +805,9 @@ export const authController = new AuthController(authService)
    ```typescript
    export const errorHandler = (
      err: Error,
-     req: Request,
+     _req: Request,
      res: Response,
-     next: NextFunction
+     _next: NextFunction
    ) => {
      if (err instanceof AppError) {
        return res.status(err.statusCode).json({
@@ -727,7 +844,7 @@ export class AppError extends Error {
 **asyncHandler.ts**:
 
 ```typescript
-type AsyncFunction = (req: Request, res: Response, next: NextFunction) => Promise<any>
+type AsyncFunction = (req: Request, res: Response, next: NextFunction) => Promise<void>
 
 export const asyncHandler = (fn: AsyncFunction) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -749,10 +866,7 @@ const pool = mysql.createPool({
   port: env.DB_PORT,
   user: env.DB_USER,
   password: env.DB_PASSWORD,
-  database: env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  database: env.DB_NAME
 })
 
 export default pool
@@ -762,6 +876,7 @@ export default pool
 
 ```typescript
 import { z } from 'zod'
+import 'dotenv/config'
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']),
@@ -771,11 +886,12 @@ const envSchema = z.object({
   DB_USER: z.string(),
   DB_PASSWORD: z.string(),
   DB_NAME: z.string(),
-  JWT_SECRET: z.string().min(32),
-  JWT_EXPIRES_IN: z.string(),
+  JWT_SECRET: z.string(),
+  JWT_EXPIRES_IN: z.string().default('7d),
   COOKIE_EXPIRES_DAYS: z.string().transform(Number),
   COOKIE_SECURE: z.string().transform(val => val === 'true'),
   COOKIE_HTTP_ONLY: z.string().transform(val => val === 'true')
+  FRONTEND_URL: z.string()
 })
 
 export const env = envSchema.parse(process.env)
@@ -790,6 +906,7 @@ import cookieParser from 'cookie-parser'
 import { env } from './config/env'
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'
+import categoryRoutes from './routes/category.routes'
 import { errorHandler } from './middlewares/errorHandler'
 
 const app = express()
@@ -802,11 +919,12 @@ app.use(cookieParser())
 // Routes
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/categories', categoryRoutes)
 
 // Error handler (must be last)
 app.use(errorHandler)
 
-app.listen(env.PORT, () => console.log(`server runing on port ${env.PORT}`))
+app.listen(env.PORT, () => console.log(`server running on port ${env.PORT}`))
 ```
 
 ---
@@ -818,7 +936,6 @@ app.listen(env.PORT, () => console.log(`server runing on port ${env.PORT}`))
 - **No semicolons** (semicolons: "asNeeded")
 - **Single quotes** for strings
 - **2 spaces** indentation
-- **100 characters** max line width
 - **LF** line endings (Unix)
 - **Trailing commas** (ES5 style)
 - **Arrow parentheses** always included
@@ -833,7 +950,7 @@ app.listen(env.PORT, () => console.log(`server runing on port ${env.PORT}`))
 | Functions | camelCase | `findByEmail`, `hashPassword` |
 | Variables | camelCase | `hashedPassword`, `userId` |
 | Constants | UPPER_SNAKE_CASE | `MAX_LOGIN_ATTEMPTS` |
-| Interfaces | PascalCase with I prefix | `IUser`, `IConfig` |
+| Interfaces | PascalCase | `User`, `Config` |
 | Types | PascalCase | `User`, `AsyncFunction` |
 | Files | kebab-case | `user.model.ts`, `auth.service.ts` |
 
@@ -907,10 +1024,10 @@ backend/
 │   │   ├── AppError.ts          # Custom error class
 │   │   └── asyncHandler.ts      # Async error wrapper
 │   │
-│   └── index.ts                 # Application entry point
+│   ├── index.ts                 # Application entry point
+│   └── types.ts                 # All types used in the App
 │
 ├── .env                         # Environment variables (not in git)
-├── .gitignore                   # Git ignore rules (monorepo compatible)
 ├── biome.json                   # Biome configuration
 ├── tsconfig.json                # TypeScript configuration
 ├── package.json                 # Dependencies and scripts
@@ -929,7 +1046,7 @@ backend/
 - **Input**: username, email, password (validated by Zod)
 - **Process**:
   1. Validate input with `registerSchema`
-  2. Check if email/username exists
+  2. Check if email/username already exists
   3. Hash password with bcrypt (10 rounds)
   4. Create user in database
   5. Generate JWT token
@@ -954,12 +1071,6 @@ backend/
 - **Error Cases**:
   - 401: Invalid credentials (user not found)
   - 401: Invalid credentials (wrong password)
-
-#### Feature: User Logout
-
-- **Endpoint**: `POST /api/auth/logout`
-- **Process**: Clear authentication cookie
-- **Output**: Success message
 
 ### 9.2 User Features
 
@@ -1005,68 +1116,90 @@ backend/
 
 **Architecture Note**: User-related operations are separated from authentication logic:
 
-- `AuthService` handles authentication (login, register, logout)
+- `AuthService` handles authentication (login, register)
 - `UserService` handles user operations (get info, update profile)
 - This separation allows for better code organization and reusability
 
----
-
-## 10. Implemented API Endpoints
-
-### Authentication Endpoints (`/api/auth`)
-
-- `POST /api/auth/register` - Register new user (public)
-- `POST /api/auth/login` - Login user (public)
-
-### User Endpoints (`/api/users`)
-
-- `GET /api/users/info` - Get current user information (protected)
-- `PATCH /api/users/profile` - Update user profile (username/email) (protected)
-
-**Note**: Protected endpoints require JWT token in HTTP-only cookie named `token`
-
----
-
 ### 9.3 Category Features
 
-#### Feature: Create Category
+#### Feature: Category Creation
 
-- **Endpoint**: `POST /api/categories`
-- **Auth**: Required
-- **Input**: name, type (income/expense), color (optional)
+- **Endpoint**: `POST /api/categories/`
+- **Auth**: Required (JWT)
+- **Input**: name, type, color
+- **Process**:
+  1. Validate input with `createCategorySchema`
+  2. Check if the category already exists
+  3. insert the new category in the database
+- **Output**: New category object
+- **Error Cases**:
+  - 409: Categeory with this name already exists
+  - 500: failed to create category
+
+#### Feature: Get all categories from a single user
+
+- **Endpoint**: `GET /api/categories/`
+- **Auth**: Required (JWT)
+- **Process**:
+  1. check if there is a type (income | expense) in the query params
+    1.1. if not return all the categories forn a user
+  2.return the categire filtered by type
+- **Output**: An array of category objects
+
+#### Feature: Get a single category from a single user
+
+- **Endpoint**: `GET /api/categories/:id`
+- **Auth**: Required (JWT)
+- **Process**: return a single category form a user
+- **Input**: The category id
+- **Validation**: category id should be provided
+- **Output**: An object with the category or null
+- **Error Cases**:
+  - 400: Category ID is required
+  - 400: Invalid category ID
+  - 404: Category not found
+
+#### Feature: Update a category
+
+- **Endpoint**: `PATCH /api/category/:id`
+- **Auth**: Required (JWT)
+- **Input**: name (optional), color (optional)
+- **Validation**: At least one field must be provided
+- **Process**:
+  1. Validate input with `updateCategorySchema`
+  2. Check name uniqueness (if provided, exclude current name)
+  3. Update category with dynamic SQL query
+  4. Return updated category data
+- **Output**: Updated category object
+- **Error Cases**:
+  - 400: Category ID is required
+  - 400: Invalid category ID
+  - 404: Category not found
+  - 409: Category name already exists (by same user)
+
+**Implementation Details**:
+
+- Uses dynamic SQL query to update only provided fields
+- Allows partial updates (name only, color only, or both)
+- Uniqueness validation excludes current user (users can keep the name/color)
+- Model method `updateCategory` builds query dynamically based on provided fields
+
+#### Feature: Delete a category
+
+- **Endpoint**: `DELETE /api/category/:id`
+- **Auth**: Required (JWT)
+- **Input**: The category id
 - **Validation**:
-  - Name: 1-100 characters
-  - Type: 'income' or 'expense'
-  - Color: Valid hex color
+  1. check if the category id is provided in the query params
+- **Process**:
+  1. check if the category id is provided in the query params
+  2. check if the category has transactions
+- **Output**: return a message when succesfuly deleted
 - **Error Cases**:
-  - 400: Invalid input
-  - 409: Category name already exists for user
-
-#### Feature: Get All Categories
-
-- **Endpoint**: `GET /api/categories`
-- **Auth**: Required
-- **Query Params**: type (optional filter)
-- **Output**: Array of user's categories
-
-#### Feature: Update Category
-
-- **Endpoint**: `PUT /api/categories/:id`
-- **Auth**: Required
-- **Validation**: User owns category
-- **Error Cases**:
+  - 400: Category ID is required
+  - 400: Invalid category ID
   - 404: Category not found
-  - 403: Not category owner
-
-#### Feature: Delete Category
-
-- **Endpoint**: `DELETE /api/categories/:id`
-- **Auth**: Required
-- **Business Rule**: Cannot delete if transactions exist (FK RESTRICT)
-- **Error Cases**:
-  - 404: Category not found
-  - 403: Not category owner
-  - 400: Category has associated transactions
+  - 409: Category name already exists (by same user)
 
 ### 9.4 Transaction Features
 
@@ -1139,18 +1272,19 @@ backend/
 - **Hashing Algorithm**: bcrypt
 - **Salt Rounds**: 10
 - **Storage**: Never store plain text passwords
-- **Validation**: Minimum 8 characters (enforced by Zod)
+- **Validation**: Minimum 6 characters (enforced by Zod)
 
 ### 10.2 Authentication Security
 
 - **Token Type**: JWT (JSON Web Token)
 - **Storage**: HTTP-only cookies (prevents XSS)
-- **Token Expiration**: 7 days (configurable)
+- **Token Expiration**: 1 day (configurable)
 - **Secret**: Minimum 32 characters, stored in environment variables
 - **Cookie Attributes**:
   - `httpOnly: true` (prevents JavaScript access)
   - `secure: true` (HTTPS only in production)
   - `sameSite: 'strict'` (CSRF protection)
+  - `maxAge: 1d`
 
 ### 10.3 SQL Injection Prevention
 
@@ -1213,8 +1347,16 @@ pool.query(`SELECT * FROM users WHERE user_email = '${email}'`)
 
 ```typescript
 class AppError extends Error {
-  statusCode: number
-  isOperational: boolean = true
+  public readonly statusCode: number
+  public readonly isOperational: boolean
+
+  constructor(message: string, statusCode: number, isOperational = true) {
+    super(message)
+    this.statusCode = statusCode
+    this.isOperational = isOperational
+
+    Error.captureStackTrace(this, this.constructor)
+  }
 }
 ```
 
@@ -1244,28 +1386,23 @@ if (!isAuthorized) {
 1. Catch all errors from routes and middleware
 2. Determine if error is operational or programming
 3. Format error response
-4. Log programming errors
-5. Send appropriate HTTP status and message
+4. Send appropriate HTTP status and message
 
 **Implementation**:
 
 ```typescript
 export const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   if (err instanceof AppError) {
-    // Operational error - send to client
     return res.status(err.statusCode).json({
       success: false,
       message: err.message
     })
   }
-
-  // Programming error - log and send generic message
-  console.error('ERROR:', err)
   return res.status(500).json({
     success: false,
     message: 'Internal server error'
@@ -1438,7 +1575,7 @@ COOKIE_HTTP_ONLY=true
 
 | Variable | Type | Description | Example |
 | ---------- | ------ | ------------- | --------- |
-| NODE_ENV | enum | Environment mode | development, production |
+| NODE_ENV | enum | Environment mode | development, production, test |
 | PORT | number | Server port | 3000 |
 | DB_HOST | string | MySQL host | localhost |
 | DB_PORT | number | MySQL port | 3306 |
@@ -1499,8 +1636,8 @@ All environment variables are validated on application start. If any required va
 
 ### Setup Checklist
 
-- [ ] Node.js >=18 installed
-- [ ] pnpm >=8 installed
+- [ ] Node.js >=20 installed
+- [ ] pnpm >=10 installed
 - [ ] MySQL installed and running
 - [ ] Database created from schema
 - [ ] All dependencies installed
@@ -1535,10 +1672,11 @@ All environment variables are validated on application start. If any required va
 ## Document History
 
 | Version | Date | Author | Changes |
-| --------- | ------ | -------- | --------- |
+| --------- | ---------- | -------- | --------- |
 | 1.0 | 2026-01-10 | Development Team | Initial PRD created |
 | 1.1 | 2026-01-13 | Development Team | Updated with implementation details: Added auth middleware with JWT error handling, separated UserService and UserController from AuthController, updated cookie expiration to 1 day, added model method reusability pattern, added complete middleware implementations, updated API endpoints structure |
 | 1.2 | 2026-01-13 | Development Team | Added user profile update functionality: PATCH /api/users/profile endpoint, updateProfileSchema with partial updates, dynamic SQL query building in UserModel.updateUser, uniqueness validation excluding current user, architectural decision on dynamic SQL queries for security and flexibility |
+| 1.3 | 2026-01-15 | Development Team | Added complete Category feature: getAll, getbyid, create, update, delete, also update the dependencies and devDependencies to the correct version along with the typescript configuration and biome configuration files, correct some functions examples, update project structure example |
 
 ---
 
