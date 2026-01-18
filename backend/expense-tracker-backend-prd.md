@@ -2,8 +2,8 @@
 
 ## Expense Tracker Backend API
 
-**Version:** 1.3
-**Date:** January 15, 2026
+**Version:** 1.4.1
+**Date:** January 17, 2026
 **Author:** Development Team
 **Status:** In Development
 
@@ -1203,15 +1203,31 @@ backend/
 
 ### 9.4 Transaction Features
 
+#### Data & Validation Rules
+
+These rules apply to transaction create/update inputs and (where relevant) list filters.
+
+- **Date format**: `YYYY-MM-DD` (date-only; no time component).
+- **Amount**: must be **greater than 0**, have **at most 2 decimal places**, and be **≤ 99,999,999.99** (aligned with `DECIMAL(10,2)`).
+- **categoryId**: positive integer.
+- **Transaction ownership**: all read/update/delete operations are scoped to the authenticated user.
+- **Category ownership**: the referenced category must belong to the authenticated user (on create, and when changing `categoryId` during update).
+
 #### Feature: Create Transaction
 
 - **Endpoint**: `POST /api/transactions`
 - **Auth**: Required
-- **Input**: categoryId, amount, type, date, description (optional)
+- **Input (JSON)**:
+  - `categoryId` (number)
+  - `amount` (number)
+  - `type` (`income` | `expense`)
+  - `date` (`YYYY-MM-DD`)
+  - `description` (optional string)
 - **Validation**:
-  - Amount > 0
-  - Valid date format
-  - Category belongs to user
+  - Validate input fields using Zod
+  - Category must exist
+  - Category must belong to the authenticated user
+- **Output**: Newly created transaction (including category information)
 - **Error Cases**:
   - 400: Invalid input
   - 404: Category not found
@@ -1221,42 +1237,72 @@ backend/
 
 - **Endpoint**: `GET /api/transactions`
 - **Auth**: Required
-- **Query Params**:
-  - type (income/expense)
-  - categoryId
-  - startDate, endDate
-  - limit, offset (pagination)
+- **Query Params (optional)**:
+  - `type` (`income` | `expense`)
+  - `categoryId`
+  - `startDate`, `endDate` (`YYYY-MM-DD`)
+  - `limit` (default: 10, max: 100)
+  - `offset` (default: 0)
+  - Note: `limit` and `offset` are provided as query-string values (strings) and are validated/coerced to integer values; for MySQL prepared statements, they may be bound as strings during execution.
+- **Behavior**:
+  - Returns transactions **for the authenticated user only**
+  - Ordered by `transaction_date DESC, transaction_id DESC`
 - **Output**: Paginated array of transactions with category info
+- **Error Cases**:
+  - 400: Invalid query parameters
 
 #### Feature: Get Transaction by ID
 
 - **Endpoint**: `GET /api/transactions/:id`
 - **Auth**: Required
-- **Validation**: User owns transaction
+- **Validation**:
+  - `id` must be a positive integer
+  - Transaction must belong to the authenticated user
+- **Output**: Transaction with category info
 - **Error Cases**:
+  - 400: Invalid transaction ID
   - 404: Transaction not found
-  - 403: Not transaction owner
 
-#### Feature: Update Transaction
+#### Feature: Update Transaction (Partial)
 
-- **Endpoint**: `PUT /api/transactions/:id`
+- **Endpoint**: `PATCH /api/transactions/:id`
 - **Auth**: Required
-- **Validation**: User owns transaction
+- **Input (JSON)**: any subset of
+  - `categoryId` (number)
+  - `amount` (number)
+  - `type` (`income` | `expense`)
+  - `date` (`YYYY-MM-DD`)
+  - `description` (optional string)
+- **Validation**:
+  - At least one field must be provided
+  - `id` must be a positive integer
+  - Transaction must belong to the authenticated user
+  - If `categoryId` is provided, the category must exist and belong to the authenticated user
+- **Output**: Updated transaction with category info
 - **Error Cases**:
+  - 400: Invalid input
   - 404: Transaction not found
-  - 403: Not transaction owner
+  - 404: Category not found (when changing category)
+  - 403: Category doesn't belong to user (when changing category)
 
 #### Feature: Delete Transaction
 
 - **Endpoint**: `DELETE /api/transactions/:id`
 - **Auth**: Required
-- **Validation**: User owns transaction
+- **Validation**:
+  - `id` must be a positive integer
+  - Transaction must belong to the authenticated user
+- **Output**: `204 No Content`
+- **Error Cases**:
+  - 400: Invalid transaction ID
+  - 404: Transaction not found
 
 #### Feature: Get Financial Summary
 
 - **Endpoint**: `GET /api/transactions/summary`
 - **Auth**: Required
-- **Query Params**: startDate, endDate
+- **Status**: Planned / Deferred (not implemented in the current iteration)
+- **Query Params**: `startDate`, `endDate`
 - **Output**:
   - Total income
   - Total expenses
@@ -1677,6 +1723,8 @@ All environment variables are validated on application start. If any required va
 | 1.1 | 2026-01-13 | Development Team | Updated with implementation details: Added auth middleware with JWT error handling, separated UserService and UserController from AuthController, updated cookie expiration to 1 day, added model method reusability pattern, added complete middleware implementations, updated API endpoints structure |
 | 1.2 | 2026-01-13 | Development Team | Added user profile update functionality: PATCH /api/users/profile endpoint, updateProfileSchema with partial updates, dynamic SQL query building in UserModel.updateUser, uniqueness validation excluding current user, architectural decision on dynamic SQL queries for security and flexibility |
 | 1.3 | 2026-01-15 | Development Team | Added complete Category feature: getAll, getbyid, create, update, delete, also update the dependencies and devDependencies to the correct version along with the typescript configuration and biome configuration files, correct some functions examples, update project structure example |
+| 1.4 | 2026-01-17 | Development Team | Updated Transaction feature (9.4): added data/validation rules, clarified errors, changed update endpoint to PATCH, added filters + pagination for list, and marked summary as planned/deferred |
+| 1.4.1 | 2026-01-17 | Development Team | Clarified limit/offset query handling: accepted as query-string values, validated/coerced to integers, and may be bound as strings for mysql2 prepared statement compatibility |
 
 ---
 
