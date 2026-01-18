@@ -1,6 +1,7 @@
 import type { z } from 'zod'
 import type { loginSchema, registerSchema } from './schemas/user.schema'
 import type { createCategorySchema, updateCategorySchema } from './schemas/category.schema'
+import type { createTransactionSchema, updateTransactionSchema } from './schemas/transaction.schema'
 
 export interface User {
   user_id: number
@@ -27,3 +28,27 @@ export interface Category {
 
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>
+
+export interface Transaction {
+  transaction_id: number
+  transaction_user_id: number
+  transaction_category_id: number
+  transaction_amount: number
+  transaction_date: string
+  transaction_type: 'income' | 'expense'
+  transaction_description: string | null
+  transaction_created_at: Date
+  transaction_updated_at: Date
+}
+
+export type TransactionListItem = {
+  transaction_id: number
+  category_name: string
+  transaction_amount: number
+  transaction_date: string
+  transaction_type: 'income' | 'expense'
+  transaction_description: string | null
+}
+
+export type CreateTransactionInput = z.infer<typeof createTransactionSchema>
+export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>

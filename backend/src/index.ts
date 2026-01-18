@@ -6,6 +6,7 @@ import { errorHandler } from './middlewares/errorHandler'
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'
 import categoryRoutes from './routes/category.routes'
+import transationRoutes from "./routes/transactions.routes";
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.use(cookieParser())
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/categories', categoryRoutes)
+app.use('/api/transactions', transationRoutes)
 
 app.use(errorHandler)
 
