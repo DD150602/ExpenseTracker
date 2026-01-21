@@ -1,7 +1,7 @@
-import { asyncHandler } from '../utils/asyncHandler'
 import type { Request, Response } from 'express'
 import { type UserService, userService } from '../services/user.service'
 import { AppError } from '../utils/AppError'
+import { asyncHandler } from '../utils/asyncHandler'
 
 export class UserController {
   constructor(private userService: UserService) {}

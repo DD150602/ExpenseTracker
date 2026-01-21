@@ -1,8 +1,8 @@
-import { type AuthServcice, authService } from '../services/auth.service'
-import { asyncHandler } from '../utils/asyncHandler'
-import { env } from '../config/env'
 import type { Request, Response } from 'express'
+import { env } from '../config/env'
+import { type AuthServcice, authService } from '../services/auth.service'
 import type { RegisterInput } from '../types'
+import { asyncHandler } from '../utils/asyncHandler'
 
 export class AuthController {
   constructor(private authService: AuthServcice) {}

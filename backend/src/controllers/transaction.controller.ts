@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express'
+import { getTransactionsQuerySchema } from '../schemas/transaction.schema'
 import { type TransactionService, transactionService } from '../services/transaction.service'
 import { AppError } from '../utils/AppError'
 import { asyncHandler } from '../utils/asyncHandler'
-import { getTransactionsQuerySchema } from '../schemas/transaction.schema'
 
 export class TransactionController {
   constructor(private transactionService: TransactionService) {}

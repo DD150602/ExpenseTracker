@@ -1,7 +1,7 @@
 import type { z } from 'zod'
-import type { loginSchema, registerSchema } from './schemas/user.schema'
 import type { createCategorySchema, updateCategorySchema } from './schemas/category.schema'
 import type { createTransactionSchema, updateTransactionSchema } from './schemas/transaction.schema'
+import type { loginSchema, registerSchema } from './schemas/user.schema'
 
 export interface User {
   user_id: number

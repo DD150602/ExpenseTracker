@@ -80,7 +80,7 @@ export class UserModel {
     } catch (error) {
       conn.release()
       throw error
-    }finally{
+    } finally {
       conn.release()
     }
   }

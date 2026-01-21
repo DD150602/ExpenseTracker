@@ -22,18 +22,18 @@ export class AuthServcice {
     return { user: this.sanitizeUser(user), token }
   }
 
-  async register(data:RegisterInput){
-    const existingUser =  await this.userModel.findByEmail(data.email)
-    if(existingUser){
+  async register(data: RegisterInput) {
+    const existingUser = await this.userModel.findByEmail(data.email)
+    if (existingUser) {
       throw new AppError('Email already in use', 403)
     }
     const hashedPassword = await this.hash(data.password)
-    const result = await this.userModel.createUser({...data, password: hashedPassword})
-    if(!result){
+    const result = await this.userModel.createUser({ ...data, password: hashedPassword })
+    if (!result) {
       throw new AppError('Registration failed', 500)
     }
     const token = this.generateToken(result)
-    return {userId: result, token}
+    return { userId: result, token }
   }
 
   private async hash(password: string): Promise<string> {

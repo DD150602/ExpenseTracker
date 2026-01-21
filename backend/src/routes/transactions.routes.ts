@@ -10,7 +10,7 @@ router.use(auth)
 router.get('/', transactionController.getAllUserTransactions)
 router.post('/', validate(createTransactionSchema), transactionController.createTransaction)
 router.get('/:id', transactionController.getTransactionById)
-router.patch('/:id',validate(updateTransactionSchema), transactionController.updateTransaction)
+router.patch('/:id', validate(updateTransactionSchema), transactionController.updateTransaction)
 router.delete('/:id', transactionController.deleteTransaction)
 
 export default router

@@ -11,10 +11,11 @@ export const loginSchema = z.object({
   password: z.string().min(6).max(100),
 })
 
-export const updateProfileSchema = z.object({
-  username: z.string().min(3).max(50).optional(),
-  email: z.email().optional()
-}).refine(
-  (data) => data.username || data.email,
-  { message: 'At least one field (username or email) must be provided' }
-)
+export const updateProfileSchema = z
+  .object({
+    username: z.string().min(3).max(50).optional(),
+    email: z.email().optional(),
+  })
+  .refine((data) => data.username || data.email, {
+    message: 'At least one field (username or email) must be provided',
+  })

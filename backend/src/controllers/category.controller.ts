@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { type CategoryService, categoryService } from '../services/category.service'
-import { asyncHandler } from '../utils/asyncHandler'
 import { AppError } from '../utils/AppError'
+import { asyncHandler } from '../utils/asyncHandler'
 
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}

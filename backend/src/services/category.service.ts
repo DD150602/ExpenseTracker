@@ -1,5 +1,5 @@
 import { type CategoryModel, categoryModel } from '../models/category.model'
-import type { CreateCategoryInput, UpdateCategoryInput, Category } from '../types'
+import type { Category, CreateCategoryInput, UpdateCategoryInput } from '../types'
 import { AppError } from '../utils/AppError'
 
 export class CategoryService {

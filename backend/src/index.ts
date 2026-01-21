@@ -4,9 +4,9 @@ import express, { json } from 'express'
 import { env } from './config/env'
 import { errorHandler } from './middlewares/errorHandler'
 import authRoutes from './routes/auth.routes'
-import userRoutes from './routes/user.routes'
 import categoryRoutes from './routes/category.routes'
-import transationRoutes from "./routes/transactions.routes";
+import transationRoutes from './routes/transactions.routes'
+import userRoutes from './routes/user.routes'
 
 const app = express()
 

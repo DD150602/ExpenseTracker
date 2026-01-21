@@ -1,5 +1,5 @@
+import type { NextFunction, Request, Response } from 'express'
 import { AppError } from '../utils/AppError'
-import type { Response, Request, NextFunction } from 'express'
 
 export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof AppError) {
