@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 import { loginSchema, type LoginInput } from '../schemas/loginSchema'
 import { useLoginMutation } from '../api/useLoginMutation'
-
-// shadcn components (adjust paths to your setup)
 import { Button } from '@/shared/ui/shadcn/button'
 import { Input } from '@/shared/ui/shadcn/input'
 import { Label } from '@/shared/ui/shadcn/label'
+import axios from 'axios'
+import type { ApiErrorResponse } from '../types/types'
 
 export function LoginForm() {
   const navigate = useNavigate()
@@ -21,13 +21,17 @@ export function LoginForm() {
 
   const onSubmit = async (values: LoginInput) => {
     try {
-      await loginMutation.mutateAsync(values)
-      toast.success('Logged in successfully')
+      const res = await loginMutation.mutateAsync(values)
+      toast.success(res.message)
       navigate('/', { replace: true })
     } catch (err) {
-      console.log(err)
-      // We don’t assume backend error shape; keep message generic
-      toast.error('Login failed. Check your credentials and try again.')
+      let message = 'Login failed. Please try again.'
+      if (axios.isAxiosError<ApiErrorResponse>(err)) {
+        message = err.response?.data?.message ?? message
+      } else if (err instanceof Error) {
+        message = err.message
+      }
+      toast.error(message)
     }
   }
 

@@ -18,3 +18,8 @@ export type LoginResponse = {
     token: string
   }
 }
+
+export type ApiErrorResponse = {
+  success?: false
+  message?: string
+}
