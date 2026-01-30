@@ -32,10 +32,10 @@ export function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login">
-              Log in
+            <Link to="/login">Log in</Link>
+            <Link className="bg-black text-white rounded-sm p-2" to="/register">
+              Sing Up
             </Link>
-            <Link className='bg-black text-white rounded-sm p-2' to="/register">Sing In</Link>
           </div>
 
           <button
@@ -67,7 +67,9 @@ export function Header() {
                 <Link to="/login" className="justify-start">
                   Log in
                 </Link>
-                <Link className='bg-black text-white rounded-sm p-2' to="register">Sing In</Link>
+                <Link className="bg-black text-white rounded-sm p-2" to="register">
+                  Sing Up
+                </Link>
               </div>
             </nav>
           </div>
