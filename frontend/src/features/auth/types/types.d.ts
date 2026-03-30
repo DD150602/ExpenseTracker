@@ -23,3 +23,14 @@ export type ApiErrorResponse = {
   success?: false
   message?: string
 }
+
+export type RegisterResponse = {
+  success: boolean
+  message: string
+  data: {
+    userId:number
+    token: string
+  }
+}
+
+export type RegisterInput = z.infer<typeof registerSchema>
