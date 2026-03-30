@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
-import { loginSchema, type LoginInput } from '../schemas/loginSchema'
-import { useLoginMutation } from '../api/useLoginMutation'
 import { Button } from '@/shared/ui/shadcn/button'
 import { Input } from '@/shared/ui/shadcn/input'
 import { Label } from '@/shared/ui/shadcn/label'
-import axios from 'axios'
+import { useLoginMutation } from '../api/useLoginMutation'
+import { type LoginInput, loginSchema } from '../schemas/loginSchema'
 import type { ApiErrorResponse } from '../types/types'
 
 export function LoginForm() {

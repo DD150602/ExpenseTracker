@@ -1,6 +1,6 @@
 import { ArrowRight, TrendingDown, TrendingUp } from 'lucide-react'
-import { Button } from '@/shared/ui/shadcn/button'
 import { Link } from 'react-router'
+import { Button } from '@/shared/ui/shadcn/button'
 
 export function Hero() {
   return (
