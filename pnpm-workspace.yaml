@@ -1,0 +1,6 @@
+packages:
+  - 'frontend'
+  - 'backend'
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
